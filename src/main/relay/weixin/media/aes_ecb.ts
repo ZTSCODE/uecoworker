@@ -1,0 +1,19 @@
+/**
+ * AES-128-ECB 加解密 + 填充尺寸计算。微信 CDN 媒体用 AES-128-ECB 加密。
+ * 移植自 codex-bridge。
+ */
+import { createCipheriv, createDecipheriv } from "node:crypto";
+
+export function encryptAesEcb(plaintext: Buffer, key: Buffer): Buffer {
+  const cipher = createCipheriv("aes-128-ecb", key, null);
+  return Buffer.concat([cipher.update(plaintext), cipher.final()]);
+}
+
+export function decryptAesEcb(ciphertext: Buffer, key: Buffer): Buffer {
+  const decipher = createDecipheriv("aes-128-ecb", key, null);
+  return Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+}
+
+export function aesEcbPaddedSize(plaintextSize: number): number {
+  return Math.ceil((plaintextSize + 1) / 16) * 16;
+}

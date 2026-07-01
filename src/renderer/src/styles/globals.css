@@ -1,0 +1,286 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+    --primary: 240 6% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 10%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 6% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 240 6% 10%;
+    --radius: 0.5rem;
+    --sidebar-bg: 240 5% 96%;
+    --sidebar-fg: 240 4% 30%;
+    --sidebar-active: 240 6% 90%;
+    /* 侧边栏行 hover：必须比 --sidebar-bg 更深才可见（亮色下 --accent 与 bg 同值，
+       会导致 hover 无效果）。 */
+    --sidebar-hover: 240 5% 90%;
+    --tab-active: 0 0% 100%;
+    --tab-inactive: 240 5% 96%;
+    /* Brand accent — used for active states, links, highlights. */
+    --accent-color: 250 84% 60%;
+    /* User-adjustable chat font size & family. */
+    --chat-font-size: 13px;
+    --chat-font-family: var(--font-sans, inherit);
+  }
+
+  .dark {
+    /* 暗色调色板：中性灰（饱和度 0%，无色相偏移），明度分层清晰。
+       层级梯度（由深到浅）：sidebar 18% < background 21% < card 25%
+       < muted/accent 30% < hover。
+       边框是层次的关键：普通分隔线 40%，让卡片/输入框边界在暗底上清晰跳出，
+       避免「糊成一片」。 */
+    --background: 0 0% 21%;
+    --foreground: 0 0% 97%;
+    --card: 0 0% 25%;
+    --card-foreground: 0 0% 97%;
+    --popover: 0 0% 27%;
+    --popover-foreground: 0 0% 97%;
+    --primary: 0 0% 97%;
+    --primary-foreground: 0 0% 13%;
+    --secondary: 0 0% 30%;
+    --secondary-foreground: 0 0% 97%;
+    --muted: 0 0% 30%;
+    --muted-foreground: 0 0% 68%;
+    --accent: 0 0% 34%;
+    --accent-foreground: 0 0% 97%;
+    --destructive: 0 63% 50%;
+    --destructive-foreground: 0 0% 98%;
+    /* 边框：全项目统一用 border-border，40% 在暗底上清晰可见。
+       --input 跟随同值（项目未单独使用 border-input）。 */
+    --border: 0 0% 40%;
+    --input: 0 0% 40%;
+    --ring: 250 84% 66%;
+    --sidebar-bg: 0 0% 18%;
+    --sidebar-fg: 0 0% 70%;
+    --sidebar-active: 0 0% 32%;
+    /* 暗色下 --accent (34%) 比 sidebar-bg (18%) 明显更亮，hover 本就可见。 */
+    --sidebar-hover: 0 0% 34%;
+    --tab-active: 0 0% 25%;
+    --tab-inactive: 0 0% 20%;
+    --accent-color: 250 84% 66%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* CodeMirror 内部滚动条：与全局滚动条保持一致（预览面板、代码编辑器）。 */
+.cm-scroller::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.cm-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cm-scroller::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+.cm-scroller::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Hide scrollbar but keep scrolling (used by the to-do roadmap, drag-to-scroll). */
+.cw-no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.cw-no-scrollbar::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+.titlebar-drag {
+  -webkit-app-region: drag;
+}
+.titlebar-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* Range slider — rounded pill track with accent fill.
+   Fill ratio comes from the inline `--cw-pct` variable (e.g. config 外观 → 聊天字号). */
+.cw-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    hsl(var(--accent-color)) 0%,
+    hsl(var(--accent-color)) var(--cw-pct, 50%),
+    hsl(var(--muted)) var(--cw-pct, 50%),
+    hsl(var(--muted)) 100%
+  );
+  cursor: pointer;
+  outline: none;
+}
+.cw-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.22);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.cw-range::-webkit-slider-thumb:hover {
+  transform: scale(1.14);
+}
+.cw-range:active::-webkit-slider-thumb {
+  transform: scale(1.14);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.22), 0 0 0 4px hsl(var(--accent-color) / 0.18);
+}
+
+/* 云母/亚克力材质：半透明主题底色 + 背景模糊 + 提饱和，浮层透出底层内容。
+   无渐变，纯净半透明。亮/暗主题各自取色。
+   底色不透明度需要足够高，保证浮层文字在「背后是纯黑内容」时仍清晰可读
+   （过低会让顶栏文字被深色背景吃掉）；blur 仍保留云母透出感。 */
+.cw-mica {
+  background-color: hsl(var(--card) / 0.65);
+  backdrop-filter: blur(20px) saturate(1.7);
+  -webkit-backdrop-filter: blur(20px) saturate(1.7);
+}
+.dark .cw-mica {
+  /* 暗色下背后常是深色/纯黑内容，底色要够实才压得住，文字对比足够。 */
+  background-color: hsl(var(--card) / 0.5);
+}
+
+/* Brand accent helpers */
+.text-accent-brand { color: hsl(var(--accent-color)); }
+.bg-accent-brand { background-color: hsl(var(--accent-color)); }
+.border-accent-brand { border-color: hsl(var(--accent-color)); }
+.ring-accent-brand { --tw-ring-color: hsl(var(--accent-color)); }
+
+/* Motion: subtle entrance + smooth interactions */
+@keyframes cw-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cw-slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cw-bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2.5px); }
+}
+.animate-fade-in { animation: cw-fade-in 0.2s ease-out; }
+.animate-slide-up { animation: cw-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+.animate-bounce-soft { animation: cw-bounce-soft 1.2s ease-in-out infinite; }
+
+/* 浮层快速入场：比 fade-in 更短(0.12s)、位移更小，点开即到位，无拖沓感。
+   用于会话列表/历史等弹层，避免「前置动画太长」。 */
+@keyframes cw-pop-in {
+  from { opacity: 0; transform: translateY(-2px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-pop-in { animation: cw-pop-in 0.12s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: top; }
+
+/* 只淡入透明度、绝不动 transform——给需要靠 translate 居中的浮层用（否则关键帧里的
+   translateY 会覆盖 -translate-x-1/2，造成出现瞬间左右跳动）。 */
+@keyframes cw-fade-opacity { from { opacity: 0; } to { opacity: 1; } }
+.animate-fade-opacity { animation: cw-fade-opacity 0.2s ease-out; }
+
+@keyframes cw-flash-kf {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  30% { box-shadow: 0 0 0 3px hsl(var(--accent-color) / 0.5); }
+}
+.cw-flash { animation: cw-flash-kf 1.5s ease-out; }
+
+@keyframes cw-slide-in-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in-right { animation: cw-slide-in-right 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* 持久任务清单「点完成」动画:当前色(普通/黄) → 短暂绿 → 灰 + 划掉 + 略缩小。
+   颜色用 currentColor 之外的显式色:绿用 emerald-500,灰用 muted-foreground。
+   div 包裹文本统一应用,line-through 与 scale 在末段渐显。 */
+@keyframes cw-checklist-done {
+  0%   { color: inherit; text-decoration-color: transparent; }
+  25%  { color: rgb(16, 185, 129); text-decoration-color: transparent; }   /* emerald-500 */
+  55%  { color: rgb(16, 185, 129); }
+  100% { color: hsl(var(--muted-foreground) / 0.5); }
+}
+.cw-checklist-done {
+  animation: cw-checklist-done 0.5s ease-out forwards;
+}
+/* AI 改动高亮:背景轻闪一下,提示「这条刚被 AI 动过」。 */
+@keyframes cw-checklist-flash {
+  0%   { background-color: hsl(var(--accent-color) / 0.18); }
+  100% { background-color: transparent; }
+}
+.cw-checklist-flash { animation: cw-checklist-flash 1.6s ease-out; }
+
+/* 生成中转圈角标：纯持续旋转。颜色（紫→红渐变）改由 React 按「已耗时」内联
+   计算 + 每秒心跳重渲染推动，不在 CSS 里做，避免 streaming 期间反复重挂卡住。 */
+@keyframes cw-spin { to { transform: rotate(360deg); } }
+.animate-gen-spin { animation: cw-spin 1s linear infinite; }
+
+/* Default smooth transitions on interactive elements */
+button, a, input, textarea, select {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+/* Tactile press feedback on buttons */
+button:active { transform: scale(0.96); }
+/* Smooth view transitions */
+.cw-view-enter { animation: cw-fade-in 0.18s ease-out; }
+
+.xterm {
+  padding: 0;
+  height: 100%;
+  background-color: inherit;
+}
+.xterm-viewport {
+  background-color: inherit !important;
+}
+.xterm-viewport::-webkit-scrollbar {
+  width: 4px;
+}
+.xterm-viewport::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.4);
+}
